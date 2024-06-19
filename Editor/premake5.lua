@@ -12,7 +12,12 @@ project "Editor"
 		"src/**.h",
 		"src/**.cpp"
 	}
-	
+
+	includedirs
+	{
+		"%{wks.location}/Shadow/src",
+	}
+
 	links
 	{
 		"Shadow"
