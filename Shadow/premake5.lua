@@ -19,17 +19,18 @@ project "Shadow"
 	includedirs
 	{
 		"src",
+		"vendor/spdlog/include",
 	}
 
 	filter "system:windows"
 		systemversion "latest"
 
 	filter "configurations:Debug"
-		defines "HZ_DEBUG"
+		defines "SD_DEBUG"
 		runtime "Debug"
 		symbols "on"
 
 	filter "configurations:Release"
-		defines "HZ_RELEASE"
+		defines "SD_RELEASE"
 		runtime "Release"
 		optimize "on"

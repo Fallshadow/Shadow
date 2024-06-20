@@ -16,6 +16,8 @@ project "Editor"
 	includedirs
 	{
 		"%{wks.location}/Shadow/src",
+		"%{wks.location}/Shadow/vendor/spdlog/include",
+		"%{wks.location}/Shadow/vendor",
 	}
 
 	links
@@ -27,11 +29,11 @@ project "Editor"
 		systemversion "latest"
 
 	filter "configurations:Debug"
-		defines "HZ_DEBUG"
+		defines "SD_DEBUG"
 		runtime "Debug"
 		symbols "on"
 
 	filter "configurations:Release"
-		defines "HZ_RELEASE"
+		defines "SD_RELEASE"
 		runtime "Release"
 		optimize "on"
