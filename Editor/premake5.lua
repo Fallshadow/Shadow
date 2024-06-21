@@ -16,8 +16,7 @@ project "Editor"
 	includedirs
 	{
 		"%{wks.location}/Shadow/src",
-		"%{wks.location}/Shadow/vendor/spdlog/include",
-		"%{wks.location}/Shadow/vendor",
+		"%{IncludeDir.spdlog}",
 	}
 
 	links

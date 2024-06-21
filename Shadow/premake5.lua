@@ -19,7 +19,13 @@ project "Shadow"
 	includedirs
 	{
 		"src",
-		"vendor/spdlog/include",
+		"%{IncludeDir.spdlog}",
+		"%{IncludeDir.glfw}",
+	}
+
+	links 
+	{ 
+		"glfw",
 	}
 
 	filter "system:windows"

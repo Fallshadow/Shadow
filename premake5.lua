@@ -10,6 +10,12 @@ workspace "Shadow"
 
 	outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+	IncludeDir = {}
+	IncludeDir["spdlog"] = "%{wks.location}/Shadow/vendor/spdlog/include"
+	IncludeDir["glfw"] = "%{wks.location}/Shadow/vendor/glfw/include"
+
+
+
 group "Core"
 	include "Shadow"
 group ""
@@ -20,4 +26,5 @@ group ""
 
 group "Dependencies"
 	include "vendor/premake"
+	include "Shadow/vendor/glfw"
 group ""
