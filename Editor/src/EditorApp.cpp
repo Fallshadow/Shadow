@@ -1,16 +1,21 @@
 #include <Shadow.h>
 #include <Shadow/Core/EntryPoint.h>
 
+#include "EditorLayer.h"
+
 namespace Shadow
 {
-	class Editor : public Application
+	class EditorApp : public Application
 	{
 	public:
-		Editor() {}
+        EditorApp()
+        {
+            PushLayer(new EditorLayer());
+        }
 	};
 
 	Application* CreateApplication()
 	{
-		return new Editor();
+		return new EditorApp();
 	}
 }

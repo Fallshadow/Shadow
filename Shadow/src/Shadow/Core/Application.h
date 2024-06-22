@@ -4,6 +4,8 @@
 #include <functional>
 
 #include "Shadow/Core/Window.h"
+#include "Shadow/Core/Layer.h"
+#include "Shadow/Core/LayerStack.h"
 #include "Shadow/Events/Event.h"
 #include "Shadow/Events/ApplicationEvent.h"
 
@@ -19,10 +21,13 @@ namespace Shadow
 
 		void Close();
 
+        static Application& Get() { return *s_Instance; }
         Window& GetWindow() { return *m_Window; }
-        void OnEvent(Event& e);
 
-		static Application& Get() { return *s_Instance; }
+        void PushLayer(Layer* layer);
+        void PushOverlay(Layer* overlay);
+
+        void OnEvent(Event& e);
 
 		void SubmitToMainThread(const std::function<void()>& function);
 	private:
@@ -34,6 +39,10 @@ namespace Shadow
 
 		std::vector<std::function<void()>> m_MainThreadQueue;
 		std::mutex m_MainThreadQueueMutex;
+
+        LayerStack m_LayerStack;
+
+        float m_LastFrameTime = 0.0f;
 
         Scope<Window> m_Window;
         bool OnWindowClose(WindowCloseEvent& e);

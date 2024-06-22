@@ -1,5 +1,7 @@
 #include "sdpch.h"
 #include "Shadow/Core/Application.h"
+#include "Shadow/Core/Tool/TimeStep.h"
+#include "Shadow/Utils/PlatformUtils.h"
 
 namespace Shadow
 {
@@ -28,12 +30,23 @@ namespace Shadow
 	{
 		while (m_Running)
 		{
-			// TODO:Time步进
+			// Time步进
+            // window使用glfw 日后为了其他平台 可能需要Platform::GetTime()之类的实现
+            float time = Time::GetTime();
+            TimeStep timestep = time - m_LastFrameTime;
+            m_LastFrameTime = time;
 
 			// 主线程队列代码执行
             ExecuteMainThreadQueue();
 
-			// TODO:各个功能层执行
+			// 各个功能层执行
+            if (!m_Minimized)
+            {
+                for (Layer* layer : m_LayerStack)
+                    layer->OnUpdate(timestep);
+
+                // TODO:imgui
+            }
 
 			// 窗口更新
             m_Window->OnUpdate();
@@ -45,11 +58,30 @@ namespace Shadow
 		m_Running = false;
 	}
 
+    void Application::PushLayer(Layer* layer)
+    {
+        m_LayerStack.PushLay(layer);
+        layer->OnAttach();
+    }
+
+    void Application::PushOverlay(Layer* overlay)
+    {
+        m_LayerStack.PushOverlay(overlay);
+        overlay->OnAttach();
+    }
+
     void Application::OnEvent(Event& e)
     {
         EventDispatcher dispatcher(e);
         dispatcher.Dispatch<WindowCloseEvent>(SD_BIND_EVENT_FN(Application::OnWindowClose));
         dispatcher.Dispatch<WindowResizeEvent>(SD_BIND_EVENT_FN(Application::OnWindowResize));
+
+        for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it)
+        {
+            if (e.Handled)
+                break;
+            (*it)->OnEvent(e);
+        }
     }
 
     bool Application::OnWindowClose(WindowCloseEvent& e)
