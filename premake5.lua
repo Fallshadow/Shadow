@@ -13,6 +13,7 @@ workspace "Shadow"
 	IncludeDir = {}
 	IncludeDir["spdlog"] = "%{wks.location}/Shadow/vendor/spdlog/include"
 	IncludeDir["glfw"] = "%{wks.location}/Shadow/vendor/glfw/include"
+	IncludeDir["glm"] = "%{wks.location}/Shadow/vendor/glm"
 
 
 

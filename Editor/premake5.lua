@@ -17,6 +17,7 @@ project "Editor"
 	{
 		"%{wks.location}/Shadow/src",
 		"%{IncludeDir.spdlog}",
+		"%{IncludeDir.glm}",
 	}
 
 	links

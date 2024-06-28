@@ -14,6 +14,8 @@ project "Shadow"
 	{
 		"src/**.h",
 		"src/**.cpp",
+		"vendor/glm/glm/**.hpp",
+		"vendor/glm/glm/**.inl",
 	}
 
 	includedirs
@@ -21,6 +23,7 @@ project "Shadow"
 		"src",
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.glfw}",
+		"%{IncludeDir.glm}",
 	}
 
 	links 
