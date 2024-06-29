@@ -1,5 +1,6 @@
 #include "UT1FocusRendererLayer.h"
 
+#include <imgui.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -107,6 +108,9 @@ namespace Shadow
 
     void UT1FocusRendererLayer::OnImGuiRender()
     {
+        ImGui::Begin("Settings");
+        ImGui::ColorEdit3("Square Color", glm::value_ptr(m_SquareColor));
+        ImGui::End();
     }
 
     void UT1FocusRendererLayer::OnEvent(Event& e)

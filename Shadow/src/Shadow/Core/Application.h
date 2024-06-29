@@ -8,6 +8,7 @@
 #include "Shadow/Core/LayerStack.h"
 #include "Shadow/Events/Event.h"
 #include "Shadow/Events/ApplicationEvent.h"
+#include "Shadow/ImGui/ImGuiLayer.h"
 
 int main(int argc, char** argv);
 
@@ -22,6 +23,7 @@ namespace Shadow
 		void Close();
 
         static Application& Get() { return *s_Instance; }
+        ImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; }
         Window& GetWindow() { return *m_Window; }
 
         void PushLayer(Layer* layer);
@@ -45,6 +47,7 @@ namespace Shadow
         float m_LastFrameTime = 0.0f;
 
         Scope<Window> m_Window;
+        ImGuiLayer* m_ImGuiLayer;
         bool OnWindowClose(WindowCloseEvent& e);
         bool OnWindowResize(WindowResizeEvent& e);
         bool m_Minimized = false;

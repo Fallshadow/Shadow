@@ -18,9 +18,11 @@ namespace Shadow
         m_Window->SetEventCallback(SD_BIND_EVENT_FN(Application::OnEvent));
 
 		// 渲染初始化
-		// Imgui初始化
         Renderer::Init();
 
+		// Imgui初始化 (确保渲染先进行初始化，否则imgui依赖的OpenGL初始化失败)
+        m_ImGuiLayer = new ImGuiLayer();
+        PushOverlay(m_ImGuiLayer);
 	}
 
 	Application::~Application()
@@ -51,7 +53,12 @@ namespace Shadow
                 for (Layer* layer : m_LayerStack)
                     layer->OnUpdate(timestep);
 
-                // TODO:imgui
+                m_ImGuiLayer->Begin();
+                {
+                    for (Layer* layer : m_LayerStack)
+                        layer->OnImGuiRender();
+                }
+                m_ImGuiLayer->End();
             }
 
 			// 窗口更新
