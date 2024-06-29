@@ -23,12 +23,14 @@ project "Shadow"
 		"src",
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.glfw}",
+		"%{IncludeDir.glad}",
 		"%{IncludeDir.glm}",
 	}
 
 	links 
 	{ 
 		"glfw",
+		"glad",
 	}
 
 	filter "system:windows"
