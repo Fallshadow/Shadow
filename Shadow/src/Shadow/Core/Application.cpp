@@ -2,6 +2,7 @@
 #include "Shadow/Core/Application.h"
 #include "Shadow/Core/Tool/TimeStep.h"
 #include "Shadow/Utils/PlatformUtils.h"
+#include "Shadow/Renderer/Renderer.h"
 
 namespace Shadow
 {
@@ -18,12 +19,17 @@ namespace Shadow
 
 		// 渲染初始化
 		// Imgui初始化
+        Renderer::Init();
+
 	}
 
 	Application::~Application()
 	{
 		// 脚本结束
+
+
 		// 渲染结束
+        Renderer::Shutdown();
 	}
 
 	void Application::Run()
@@ -100,6 +106,8 @@ namespace Shadow
         }
 
         m_Minimized = false;
+        Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
+
         return false;
     }
 

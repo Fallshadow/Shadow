@@ -8,3 +8,15 @@
 #include "Shadow/Core/Tool/TimeStep.h"
 #include "Shadow/Core/Tool/Log.h"
 #include "Shadow/Core/Tool/Assert.h"
+
+// ---Renderer------------------------
+#include "Shadow/Renderer/Renderer.h"
+#include "Shadow/Renderer/RenderCommand.h"
+
+#include "Shadow/Renderer/Buffer.h"
+#include "Shadow/Renderer/Shader.h"
+#include "Shadow/Renderer/Texture.h"
+#include "Shadow/Renderer/VertexArray.h"
+
+#include "Shadow/Renderer/OrthographicCamera.h"
+// --------------------------------

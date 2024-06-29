@@ -27,6 +27,8 @@ namespace Shadow
     void WindowsWindow::OnUpdate()
     {
         glfwPollEvents();
+
+        m_Context->SwapBuffers();
     }
 
     void WindowsWindow::Init(const WindowProps& props)
@@ -46,6 +48,10 @@ namespace Shadow
 
         m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
         ++s_GLFWWindowCount;
+
+        // 传给渲染需要使用的窗口
+        m_Context = GraphicsContext::Create(m_Window);
+        m_Context->Init();
 
         // 存入数据，方便后续回调更改
         // glfwSetWindowUserPointer 函数允许您将用户定义的指针与 GLFW 窗口关联起来。这个指针可以存储与窗口相关的任意数据。

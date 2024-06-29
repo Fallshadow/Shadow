@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Shadow/Core/Window.h"
+#include "Shadow/Renderer/GraphicsContext.h"
 #include <GLFW/glfw3.h>
 
 namespace Shadow
@@ -25,6 +26,7 @@ namespace Shadow
         virtual void Shutdown();
     private:
         GLFWwindow* m_Window;
+        Scope<GraphicsContext> m_Context;
 
         struct WindowData
         {
