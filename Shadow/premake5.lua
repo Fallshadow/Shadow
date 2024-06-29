@@ -16,6 +16,8 @@ project "Shadow"
 		"src/**.cpp",
 		"vendor/glm/glm/**.hpp",
 		"vendor/glm/glm/**.inl",
+		"vendor/stb_image/**.h",
+		"vendor/stb_image/**.cpp",
 	}
 
 	includedirs
@@ -25,6 +27,7 @@ project "Shadow"
 		"%{IncludeDir.glfw}",
 		"%{IncludeDir.glad}",
 		"%{IncludeDir.glm}",
+		"%{IncludeDir.stb_image}",
 	}
 
 	links 

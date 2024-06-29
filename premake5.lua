@@ -21,7 +21,7 @@ workspace "Shadow"
 	IncludeDir["glad"] = "%{wks.location}/Shadow/vendor/glad/include"
 	IncludeDir["glm"] = "%{wks.location}/Shadow/vendor/glm"
 
-
+	IncludeDir["stb_image"] = "%{wks.location}/Shadow/vendor/stb_image"
 
 group "Core"
 	include "Shadow"
