@@ -28,12 +28,14 @@ project "Shadow"
 		"%{IncludeDir.glad}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
+		"%{IncludeDir.Imgui}",
 	}
 
 	links 
 	{ 
 		"glfw",
 		"glad",
+		"imgui",
 	}
 
 	filter "system:windows"
