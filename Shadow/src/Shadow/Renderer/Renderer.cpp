@@ -1,6 +1,7 @@
 #include "sdpch.h"
 #include "Shadow/Renderer/Renderer.h"
 #include "Shadow/Renderer/RenderCommand.h"
+#include "Shadow/Renderer/Renderer2D.h"
 
 namespace Shadow
 {
@@ -9,10 +10,12 @@ namespace Shadow
     void Renderer::Init()
     {
         RenderCommand::Init();
+        Renderer2D::Init();
     }
 
     void Renderer::Shutdown()
     {
+        Renderer2D::Shutdown();
     }
 
     void Renderer::OnWindowResize(uint32_t width, uint32_t height)

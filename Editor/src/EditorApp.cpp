@@ -2,7 +2,6 @@
 #include <Shadow/Core/EntryPoint.h>
 
 #include "EditorLayer.h"
-#include "UnitTest/UT1FocusRendererLayer.h"
 
 namespace Shadow
 {
@@ -12,7 +11,6 @@ namespace Shadow
         EditorApp()
         {
             PushLayer(new EditorLayer());
-            PushLayer(new UT1FocusRendererLayer());
         }
 	};
 
