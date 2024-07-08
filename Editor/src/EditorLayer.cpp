@@ -1,6 +1,8 @@
 #include "EditorLayer.h"
+#include "Shadow/Scene/SceneSerializer.h"
+#include "Shadow/Utils/PlatformUtils.h"
 
-#include "imgui.h"
+#include <imgui.h>
 
 namespace Shadow
 {
@@ -20,6 +22,13 @@ namespace Shadow
         fbSpec.Width = 1280;
         fbSpec.Height = 720;
         m_FrameBuffer = FrameBuffer::Create(fbSpec);
+
+        if (!OpenProject())
+        {
+            Application::Get().Close();
+        }
+
+
     }
 
     void EditorLayer::OnDetach()
@@ -121,23 +130,23 @@ namespace Shadow
             if (ImGui::BeginMenu("File"))
             {
                 if (ImGui::MenuItem("Open Project...", "Ctrl+O"))
-                    ;
+                    OpenProject();
 
                 ImGui::Separator();
 
                 if (ImGui::MenuItem("New Scene", "Ctrl+N"))
-                    ;
+                    NewScene();
 
                 if (ImGui::MenuItem("Save Scene", "Ctrl+S"))
-                    ;
+                    SaveScene();
 
                 if (ImGui::MenuItem("Save Scene As...", "Ctrl+Shift+S"))
-                    ;
+                    SaveSceneAs();
 
                 ImGui::Separator();
 
                 if (ImGui::MenuItem("Exit"))
-                    ;
+                    Shadow::Application::Get().Close();
 
                 ImGui::EndMenu();
             }
@@ -145,6 +154,9 @@ namespace Shadow
             ImGui::EndMenuBar();
         }
 #pragma endregion
+
+        m_SceneHierarchyPanel.OnImGuiRender();
+        m_ContentBrowserPanel->OnImGuiRender();
 
 #pragma region Stats
         ImGui::Begin("Stats");
@@ -178,9 +190,21 @@ namespace Shadow
         // 参数依次为：纹理的指针（通过 ID 转换得到），图像的尺寸（使用 m_ViewportSize），UV 纹理坐标的起点 {0,1}和终点 {1,0}，分别对应纹理的左上和右下角。
         ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
+        // 检测拖入窗口的文件
+        if (ImGui::BeginDragDropTarget())
+        {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+            {
+                const wchar_t* path = (const wchar_t*)payload->Data;
+                OpenScene(path);
+            }
+            ImGui::EndDragDropTarget();
+        }
+
         ImGui::End();
         ImGui::PopStyleVar();
 #pragma endregion
+
 
         ImGui::End();
     }
@@ -192,4 +216,82 @@ namespace Shadow
             m_EditorCamera.OnEvent(e);
         }
     }
+
+#pragma region Menu
+
+    bool EditorLayer::OpenProject()
+    {
+        std::string filepath = FileDialogs::OpenFile("Hazel Project (*.hproj)\0*.hproj\0");
+        if (filepath.empty())
+            return false;
+
+        OpenProject(filepath);
+        return true;
+    }
+
+    void EditorLayer::OpenProject(const std::filesystem::path& path)
+    {
+        if (Project::Load(path))
+        {
+            auto startScenePath = Project::GetAssetFileSystemPath(Project::GetActive()->GetConfig().StartScene);
+            OpenScene(startScenePath);
+            m_ContentBrowserPanel = CreateScope<ContentBrowserPanel>();
+        }
+    }
+
+    void EditorLayer::OpenScene(const std::filesystem::path& path)
+    {
+        if (path.extension().string() != ".hazel")
+        {
+            SD_WARN("Could not load {0} - not a scene file", path.filename().string());
+            return;
+        }
+
+        Ref<Scene> newScene = CreateRef<Scene>();
+        SceneSerializer ss(newScene);
+        if (ss.Deserialize(path.string()))
+        {
+            m_EditorScene = newScene;
+            m_SceneHierarchyPanel.SetScene(m_EditorScene);
+
+            m_ActiveScene = m_EditorScene;
+            m_EditorScenePath = path;
+        }
+    }
+
+    void EditorLayer::NewScene()
+    {
+        m_EditorScene = CreateRef<Scene>();
+        m_ActiveScene = m_EditorScene;
+        m_EditorScenePath = std::filesystem::path();
+
+        m_SceneHierarchyPanel.SetScene(m_ActiveScene);
+    }
+
+    void EditorLayer::SaveScene()
+    {
+        if (!m_EditorScenePath.empty())
+            SerializeScene(m_ActiveScene, m_EditorScenePath);
+        else
+            SaveSceneAs();
+    }
+
+    void EditorLayer::SaveSceneAs()
+    {
+        // 用于显示保存文件对话框的函数，用户可以选择文件路径和文件名进行保存。
+        std::string filepath = FileDialogs::SaveFile("Hazel Scene (*.hazel)\0*.hazel\0");
+        if (!filepath.empty())
+        {
+            SerializeScene(m_ActiveScene, filepath);
+            m_EditorScenePath = filepath;
+        }
+    }
+
+    void EditorLayer::SerializeScene(Ref<Scene> scene, const std::filesystem::path& path)
+    {
+        SceneSerializer serializer(scene);
+        serializer.Serialize(path.string());
+    }
+
+#pragma endregion
 }

@@ -11,6 +11,8 @@
 
 // ---Editor------------------------
 #include "Shadow/Scene/Scene.h"
+#include "Shadow/Project/Project.h"
+
 // --------------------------------
 
 

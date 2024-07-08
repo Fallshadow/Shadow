@@ -42,19 +42,6 @@ namespace Shadow
     {
         Renderer2D::BeginScene(camera);
 
-        glm::vec3 QuadTranslation = { 0.0f, 0.0f, 0.0f };
-        glm::vec3 CircleTranslation = { 0.5f, 0.5f, 0.0f };
-        glm::vec3 Rotation = { 0.0f, 0.0f, 0.0f };
-        glm::vec3 Scale = { 1.0f, 1.0f, 1.0f };
-        glm::mat4 rotation = glm::toMat4(glm::quat(Rotation));
-
-        glm::mat4 QuadTransform = glm::translate(glm::mat4(1.0f), QuadTranslation) * rotation * glm::scale(glm::mat4(1.0f), Scale);
-        glm::mat4 CircleTransform = glm::translate(glm::mat4(1.0f), CircleTranslation) * rotation * glm::scale(glm::mat4(1.0f), Scale);
-
-        Renderer2D::DrawQuad(QuadTransform, glm::vec4(1, 1, 1, 1), 0);
-        Renderer2D::DrawCircle(CircleTransform, glm::vec4(0, 0, 0, 1));
-        Renderer2D::DrawLine(glm::vec3(-1, -1, 0), glm::vec3(1, 1, 0), glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
-
         Renderer2D::EndScene();
     }
 }
