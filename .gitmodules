@@ -10,3 +10,6 @@
 [submodule "Shadow/vendor/imgui"]
 	path = Shadow/vendor/imgui
 	url = https://github.com/ocornut/imgui
+[submodule "Shadow/vendor/yaml-cpp"]
+	path = Shadow/vendor/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp

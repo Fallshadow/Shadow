@@ -19,6 +19,7 @@ project "Editor"
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.Imgui}",
+		"%{IncludeDir.yaml_cpp}",
 	}
 
 	links

@@ -29,6 +29,7 @@ project "Shadow"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.Imgui}",
+		"%{IncludeDir.yaml_cpp}",
 	}
 
 	links 
@@ -36,6 +37,7 @@ project "Shadow"
 		"glfw",
 		"glad",
 		"imgui",
+		"yaml-cpp",
 	}
 
 	filter "system:windows"
