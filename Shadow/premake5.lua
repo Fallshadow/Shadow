@@ -30,6 +30,7 @@ project "Shadow"
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.Imgui}",
 		"%{IncludeDir.yaml_cpp}",
+		"%{IncludeDir.entt}",
 	}
 
 	links 

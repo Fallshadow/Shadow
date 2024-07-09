@@ -23,6 +23,7 @@ workspace "Shadow"
 	IncludeDir["stb_image"] = "%{wks.location}/Shadow/vendor/stb_image"
 	IncludeDir["Imgui"] = "%{wks.location}/Shadow/vendor/imgui"
 	IncludeDir["yaml_cpp"] = "%{wks.location}/Shadow/vendor/yaml-cpp/include"
+	IncludeDir["entt"] = "%{wks.location}/Shadow/vendor/entt/include"
 
 group "Core"
 	include "Shadow"

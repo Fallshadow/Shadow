@@ -20,6 +20,7 @@ project "Editor"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.Imgui}",
 		"%{IncludeDir.yaml_cpp}",
+		"%{IncludeDir.entt}",
 	}
 
 	links
