@@ -1,1 +1,23 @@
 Scene: Untitled
+Entities:
+  - Entity: 11,827,633,059,022,441,641
+    TagComponent:
+      Tag: Empty Entity
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [1, 1, 1, 1]
+      TilingFactor: 1
+  - Entity: 16,955,933,374,391,903,822
+    TagComponent:
+      Tag: Empty Entity
+    TransformComponent:
+      Translation: [-2.29999995, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    CircleRendererComponent:
+      Color: [1, 1, 1, 1]
+      Thickness: 0.375
+      Fade: 0.680000007

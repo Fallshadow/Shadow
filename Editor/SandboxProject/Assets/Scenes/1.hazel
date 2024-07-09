@@ -1,1 +1,12 @@
 Scene: Untitled
+Entities:
+  - Entity: 8,311,905,842,364,554,156
+    TagComponent:
+      Tag: RedSprite
+    TransformComponent:
+      Translation: [-1.70000005, -0.300000012, 0]
+      Rotation: [-1.00705492, 0, 0]
+      Scale: [3.0999999, 5.80000019, 1]
+    SpriteRendererComponent:
+      Color: [1, 0, 0, 1]
+      TilingFactor: 1
