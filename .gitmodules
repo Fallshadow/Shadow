@@ -13,3 +13,6 @@
 [submodule "Shadow/vendor/yaml-cpp"]
 	path = Shadow/vendor/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp
+[submodule "Shadow/vendor/ImGuizmo"]
+	path = Shadow/vendor/ImGuizmo
+	url = https://github.com/CedricGuillemet/ImGuizmo

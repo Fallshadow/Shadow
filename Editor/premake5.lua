@@ -21,6 +21,7 @@ project "Editor"
 		"%{IncludeDir.Imgui}",
 		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.entt}",
+		"%{IncludeDir.ImGuizmo}"
 	}
 
 	links

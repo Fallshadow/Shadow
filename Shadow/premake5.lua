@@ -18,6 +18,8 @@ project "Shadow"
 		"vendor/glm/glm/**.inl",
 		"vendor/stb_image/**.h",
 		"vendor/stb_image/**.cpp",
+		"vendor/ImGuizmo/ImGuizmo.h",
+		"vendor/ImGuizmo/ImGuizmo.cpp",
 	}
 
 	includedirs
@@ -31,6 +33,7 @@ project "Shadow"
 		"%{IncludeDir.Imgui}",
 		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.entt}",
+		"%{IncludeDir.ImGuizmo}",
 	}
 
 	links 
@@ -40,6 +43,9 @@ project "Shadow"
 		"imgui",
 		"yaml-cpp",
 	}
+
+	filter "files:vendor/ImGuizmo/**.cpp"
+		flags { "NoPCH" }
 
 	filter "system:windows"
 		systemversion "latest"

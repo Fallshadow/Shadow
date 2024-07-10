@@ -24,6 +24,7 @@ workspace "Shadow"
 	IncludeDir["Imgui"] = "%{wks.location}/Shadow/vendor/imgui"
 	IncludeDir["yaml_cpp"] = "%{wks.location}/Shadow/vendor/yaml-cpp/include"
 	IncludeDir["entt"] = "%{wks.location}/Shadow/vendor/entt/include"
+	IncludeDir["ImGuizmo"] = "%{wks.location}/Shadow/vendor/ImGuizmo"
 
 group "Core"
 	include "Shadow"
