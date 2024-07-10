@@ -23,6 +23,20 @@ namespace Shadow
         Entity CreateEntity(const std::string& name = std::string());
         Entity CreateEntityWithUUID(UUID uuid, const std::string& name = std::string());
         void DestroyEntity(Entity entity);
+
+        void OnRuntimeStart();
+        void OnRuntimeStop();
+
+        void OnSimulationStart();
+        void OnSimulationStop();
+
+        void OnUpdateRuntime(TimeStep ts);
+        void OnUpdateSimulation(TimeStep ts, EditorCamera& camera);
+
+        void SetPaused(bool paused) { m_IsPaused = paused; }
+        bool IsPaused() const { return m_IsPaused; }
+
+        void Step(int frames = 1);
     private:
         void RenderScene(EditorCamera& camera);
 
@@ -36,5 +50,8 @@ namespace Shadow
         friend class Entity;
         friend class SceneSerializer;
         friend class SceneHierarchyPanel;
+
+        bool m_IsPaused = false;
+        int m_StepFrames = 0;
     };
 }

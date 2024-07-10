@@ -13,12 +13,51 @@ namespace Shadow
 
     Scene::~Scene() { }
 
+    template<typename... Component>
+    static void CopyComponent(entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap)
+    {
+        (
+            [&]()
+            {
+                auto view = src.view<Component>();
+                for (auto srcEntity : view)
+                {
+                    entt::entity dstEntity = enttMap.at(src.get<IDComponent>(srcEntity).ID);
+
+                    auto& srcComponent = src.get<Component>(srcEntity);
+                    dst.emplace_or_replace<Component>(dstEntity, srcComponent);
+                }
+            }(),
+                ...);
+    }
+
+    template<typename... Component>
+    static void CopyComponent(ComponentGroup<Component...>, entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap)
+    {
+        CopyComponent<Component...>(dst, src, enttMap);
+    }
+
     Ref<Scene> Scene::Copy(Ref<Scene> other)
     {
         Ref<Scene> newScene = CreateRef<Scene>();
 
         newScene->m_ViewportWidth = other->m_ViewportWidth;
         newScene->m_ViewportHeight = other->m_ViewportHeight;
+
+        // 在新场景中创建实体
+        auto& srcSceneRegistry = other->m_Registry;
+        auto& dstSceneRegistry = newScene->m_Registry;
+        std::unordered_map<UUID, entt::entity> enttMap;
+        auto idView = srcSceneRegistry.view<IDComponent>();
+        for (auto e : idView)
+        {
+            UUID uuid = srcSceneRegistry.get<IDComponent>(e).ID;
+            const auto& name = srcSceneRegistry.get<TagComponent>(e).Tag;
+            Entity newEntity = newScene->CreateEntityWithUUID(uuid, name);
+            enttMap[uuid] = (entt::entity)newEntity;
+        }
+
+        CopyComponent(AllComponents{}, dstSceneRegistry, srcSceneRegistry, enttMap);
 
         return newScene;
     }
@@ -96,6 +135,54 @@ namespace Shadow
 
             Renderer2D::EndScene();
         }
+    }
+
+    void Scene::OnRuntimeStart()
+    {
+        
+    }
+
+    void Scene::OnRuntimeStop()
+    {
+        
+    }
+
+    void Scene::OnSimulationStart()
+    {
+
+    }
+
+    void Scene::OnSimulationStop()
+    {
+
+    }
+
+    void Scene::Step(int frames)
+    {
+        m_StepFrames = frames;
+    }
+
+    void Scene::OnUpdateRuntime(TimeStep ts)
+    {
+        if (!m_IsPaused || m_StepFrames-- > 0)
+        {
+            // Update scripts
+        }
+
+        // Physics
+
+        // Render 2D
+    }
+
+    void Scene::OnUpdateSimulation(TimeStep ts, EditorCamera& camera)
+    {
+        if (!m_IsPaused || m_StepFrames-- > 0)
+        {
+            // Physics
+        }
+
+        // Render
+        RenderScene(camera);
     }
 
     // 附加/替换 组件时有些组件需要进行一些操作

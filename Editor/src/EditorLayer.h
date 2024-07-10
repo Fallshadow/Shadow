@@ -29,6 +29,12 @@ namespace Shadow
 
     private:
         void SerializeScene(Ref<Scene> scene, const std::filesystem::path& path);
+
+        void UI_Toolbar();
+        void OnScenePlay();
+        void OnSceneSimulate();
+        void OnSceneStop();
+        void OnScenePause();
     private:
         glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
         Ref<FrameBuffer> m_FrameBuffer;
@@ -52,5 +58,7 @@ namespace Shadow
 
         // Panels
         Scope<ContentBrowserPanel> m_ContentBrowserPanel;
+
+        Ref<Texture2D> m_IconPlay, m_IconPause, m_IconStep, m_IconSimulate, m_IconStop;
     };
 }

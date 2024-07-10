@@ -28,7 +28,11 @@ namespace Shadow
             Application::Get().Close();
         }
 
-
+        m_IconPlay = Texture2D::Create("Resources/Icons/PlayButton.png");
+        m_IconPause = Texture2D::Create("Resources/Icons/PauseButton.png");
+        m_IconSimulate = Texture2D::Create("Resources/Icons/SimulateButton.png");
+        m_IconStep = Texture2D::Create("Resources/Icons/StepButton.png");
+        m_IconStop = Texture2D::Create("Resources/Icons/StopButton.png");
     }
 
     void EditorLayer::OnDetach()
@@ -61,15 +65,20 @@ namespace Shadow
             case SceneState::Edit:
             {
                 m_EditorCamera.OnUpdate(ts);
+
                 m_ActiveScene->OnUpdateEditor(m_EditorCamera);
                 break;
             }
             case SceneState::Simulate:
             {
+                m_EditorCamera.OnUpdate(ts);
+
+                m_ActiveScene->OnUpdateSimulation(ts, m_EditorCamera);
                 break;
             }
             case SceneState::Play:
             {
+                m_ActiveScene->OnUpdateRuntime(ts);
                 break;
             }
         }
@@ -205,6 +214,7 @@ namespace Shadow
         ImGui::PopStyleVar();
 #pragma endregion
 
+        UI_Toolbar();
 
         ImGui::End();
     }
@@ -291,6 +301,136 @@ namespace Shadow
     {
         SceneSerializer serializer(scene);
         serializer.Serialize(path.string());
+    }
+
+#pragma endregion
+
+#pragma region ToolBar
+
+    void EditorLayer::UI_Toolbar()
+    {
+        // 窗口上下边距为 0 ，左右边距为 2 ，这样窗口的上下更加紧凑
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
+        // 窗口内容间距为 0
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+        auto& colors = ImGui::GetStyle().Colors;
+        const auto& buttonHovered = colors[ImGuiCol_ButtonHovered];
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(buttonHovered.x, buttonHovered.y, buttonHovered.z, 0.5f));
+        const auto& buttonActive = colors[ImGuiCol_ButtonActive];
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(buttonActive.x, buttonActive.y, buttonActive.z, 0.5f));
+
+        // ImGuiWindowFlags_NoDecoration: 这个标记表示窗口不带有装饰，比如标题栏、边框等，使窗口看起来更简洁。
+        // ImGuiWindowFlags_NoScrollbar: 这个标记表示禁用滚动条，如果窗口内容太多而无法显示完全，将不会有滚动条出现。
+        // ImGuiWindowFlags_NoScrollWithMouse : 这个标记表示当鼠标滚轮滚动时，窗口内容不会滚动，而是传递给父级窗口（如果有的话）来处理滚动事件。
+        ImGui::Begin("##toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+
+        bool toolbarEnabled = (bool)m_ActiveScene;
+
+        ImVec4 tintColor = ImVec4(1, 1, 1, 1);
+        if (!toolbarEnabled)
+            tintColor.w = 0.5f;
+
+        float size = ImGui::GetWindowHeight() - 4.0f;
+        ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
+
+        if (m_SceneState == SceneState::Edit)
+        {
+            if (ImGui::ImageButton((ImTextureID)(uint64_t)m_IconPlay->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), ImVec4(1, 1, 1, 1)))
+            {
+                OnScenePlay();
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::ImageButton((ImTextureID)(uint64_t)m_IconSimulate->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), ImVec4(1, 1, 1, 1)))
+            {
+                OnSceneSimulate();
+            }
+        }
+
+        if (m_SceneState == SceneState::Play || m_SceneState == SceneState::Simulate)
+        {
+            if (ImGui::ImageButton((ImTextureID)(uint64_t)m_IconStop->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), ImVec4(1, 1, 1, 1)))
+            {
+                OnSceneStop();
+            }
+
+            ImGui::SameLine();
+
+            bool isPaused = m_ActiveScene->IsPaused();
+            if (ImGui::ImageButton((ImTextureID)(uint64_t)m_IconPause->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), ImVec4(1, 1, 1, 1)))
+            {
+                m_ActiveScene->SetPaused(!isPaused);
+            }
+
+            if (isPaused)
+            {
+                ImGui::SameLine();
+                {
+                    if (ImGui::ImageButton((ImTextureID)(uint64_t)m_IconStep->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), ImVec4(1, 1, 1, 1)))
+                    {
+                        m_ActiveScene->Step();
+                    }
+                }
+            }
+        }
+
+        ImGui::PopStyleVar(2);
+        ImGui::PopStyleColor(3);
+        ImGui::End();
+    }
+
+    void EditorLayer::OnScenePlay()
+    {
+        if (m_SceneState == SceneState::Simulate)
+        {
+            OnSceneStop();
+        }
+
+        m_SceneState = SceneState::Play;
+        m_ActiveScene = Scene::Copy(m_EditorScene);
+        m_ActiveScene->OnRuntimeStart();
+        m_SceneHierarchyPanel.SetScene(m_ActiveScene);
+    }
+
+    void EditorLayer::OnSceneSimulate()
+    {
+        if (m_SceneState == SceneState::Play) 
+        {
+            OnSceneStop();
+        }
+
+        m_SceneState = SceneState::Simulate;
+        m_ActiveScene = Scene::Copy(m_EditorScene);
+        m_ActiveScene->OnSimulationStart();
+        m_SceneHierarchyPanel.SetScene(m_ActiveScene);
+    }
+
+    void EditorLayer::OnSceneStop()
+    {
+        SD_CORE_ASSERT(m_SceneState == SceneState::Play || m_SceneState == SceneState::Simulate);
+
+        if (m_SceneState == SceneState::Play)
+        {
+            m_ActiveScene->OnRuntimeStop();
+        }
+        else if (m_SceneState == SceneState::Simulate)
+        {
+            m_ActiveScene->OnSimulationStop();
+        }
+
+        m_SceneState = SceneState::Edit;
+        m_ActiveScene = m_EditorScene;
+        m_SceneHierarchyPanel.SetScene(m_ActiveScene);
+    }
+
+    void EditorLayer::OnScenePause()
+    {
+        if (m_SceneState == SceneState::Edit)
+            return;
+
+        m_ActiveScene->SetPaused(true);
     }
 
 #pragma endregion

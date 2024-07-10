@@ -73,4 +73,8 @@ namespace Shadow
         CircleRendererComponent(const CircleRendererComponent&) = default;
     };
 
+    template<typename ... Component>
+    struct ComponentGroup { };
+
+    using AllComponents = ComponentGroup<TransformComponent, SpriteRendererComponent, CircleRendererComponent>;
 }
