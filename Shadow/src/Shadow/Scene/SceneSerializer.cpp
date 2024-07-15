@@ -225,6 +225,26 @@ namespace Shadow
                     crc.Thickness = circleRendererComponent["Thickness"].as<float>();
                     crc.Fade = circleRendererComponent["Fade"].as<float>();
                 }
+
+                auto cameraComponent = entity["CameraComponent"];
+                if (cameraComponent)
+                {
+                    auto& cc = deserializedEntity.AddComponent<CameraComponent>();
+
+                    auto& cameraProps = cameraComponent["Camera"];
+                    cc.Camera.SetProjectionType((SceneCamera::ProjectionType)cameraProps["ProjectionType"].as<int>());
+
+                    cc.Camera.SetPerspectiveVerticalFOV(cameraProps["PerspectiveFOV"].as<float>());
+                    cc.Camera.SetPerspectiveNearClip(cameraProps["PerspectiveNear"].as<float>());
+                    cc.Camera.SetPerspectiveFarClip(cameraProps["PerspectiveFar"].as<float>());
+
+                    cc.Camera.SetOrthographicSize(cameraProps["OrthographicSize"].as<float>());
+                    cc.Camera.SetOrthographicNearClip(cameraProps["OrthographicNear"].as<float>());
+                    cc.Camera.SetOrthographicFarClip(cameraProps["OrthographicFar"].as<float>());
+
+                    cc.Primary = cameraComponent["Primary"].as<bool>();
+                    cc.FixedAspectRatio = cameraComponent["FixedAspectRatio"].as<bool>();
+                }
             }
         }
 
@@ -287,6 +307,31 @@ namespace Shadow
             out << YAML::Key << "Color" << YAML::Value << circleRendererComponent.Color;
             out << YAML::Key << "Thickness" << YAML::Value << circleRendererComponent.Thickness;
             out << YAML::Key << "Fade" << YAML::Value << circleRendererComponent.Fade;
+
+            out << YAML::EndMap;
+        }
+
+        if (entity.HasComponent<CameraComponent>())
+        {
+            out << YAML::Key << "CameraComponent";
+            out << YAML::BeginMap;
+
+            auto& cameraComponent = entity.GetComponent<CameraComponent>();
+            auto& camera = cameraComponent.Camera;
+
+            out << YAML::Key << "Camera" << YAML::Value;
+            out << YAML::BeginMap;
+            out << YAML::Key << "ProjectionType" << YAML::Value << (int)camera.GetProjectionType();
+            out << YAML::Key << "PerspectiveFOV" << YAML::Value << camera.GetPerspectiveVerticalFOV();
+            out << YAML::Key << "PerspectiveNear" << YAML::Value << camera.GetPerspectiveNearClip();
+            out << YAML::Key << "PerspectiveFar" << YAML::Value << camera.GetPerspectiveFarClip();
+            out << YAML::Key << "OrthographicSize" << YAML::Value << camera.GetOrthographicSize();
+            out << YAML::Key << "OrthographicNear" << YAML::Value << camera.GetOrthographicNearClip();
+            out << YAML::Key << "OrthographicFar" << YAML::Value << camera.GetOrthographicFarClip();
+            out << YAML::EndMap;
+
+            out << YAML::Key << "Primary" << YAML::Value << cameraComponent.Primary;
+            out << YAML::Key << "FixedAspectRatio" << YAML::Value << cameraComponent.FixedAspectRatio;
 
             out << YAML::EndMap;
         }

@@ -93,6 +93,14 @@ namespace Shadow
 
         m_ViewportWidth = width;
         m_ViewportHeight = height;
+
+        auto view = m_Registry.view<CameraComponent>();
+        for (auto entity : view)
+        {
+            auto& cameraComponent = view.get<CameraComponent>(entity);
+            if (!cameraComponent.FixedAspectRatio)
+                cameraComponent.Camera.SetViewportSize(width, height);
+        }
     }
 
     Entity Scene::CreateEntity(const std::string& name)
@@ -128,10 +136,21 @@ namespace Shadow
         return newEntity;
     }
 
-    void Scene::RenderScene(EditorCamera& camera)
+    Entity Scene::GetPrimaryCameraEntity()
     {
-        Renderer2D::BeginScene(camera);
+        auto view = m_Registry.view<CameraComponent>();
+        for (auto entity : view)
+        {
+            const auto& camera = view.get<CameraComponent>(entity);
+            if (camera.Primary)
+                return Entity{ entity, this };
+        }
+        return {};
+    }
 
+
+    void Scene::RenderSceneContext()
+    {
         // Draw sprites
         {
             auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
@@ -159,9 +178,16 @@ namespace Shadow
 
                 Renderer2D::DrawCircle(transform.GetTransform(), circle.Color, circle.Thickness, circle.Fade, (int)entity);
             }
-
-            Renderer2D::EndScene();
         }
+    }
+
+    void Scene::RenderScene(EditorCamera& camera)
+    {
+        Renderer2D::BeginScene(camera);
+
+        RenderSceneContext();
+
+        Renderer2D::EndScene();
     }
 
     void Scene::OnRuntimeStart()
@@ -199,6 +225,31 @@ namespace Shadow
         // Physics
 
         // Render 2D
+        Camera* mainCamera = nullptr;
+        glm::mat4 cameraTransform;
+        {
+            auto view = m_Registry.view<TransformComponent, CameraComponent>();
+            for (auto entity : view)
+            {
+                auto [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
+
+                if (camera.Primary)
+                {
+                    mainCamera = &camera.Camera;
+                    cameraTransform = transform.GetTransform();
+                    break;
+                }
+            }
+        }
+
+        if (mainCamera)
+        {
+            Renderer2D::BeginScene(*mainCamera, cameraTransform);
+
+            RenderSceneContext();
+
+            Renderer2D::EndScene();
+        }
     }
 
     void Scene::OnUpdateSimulation(TimeStep ts, EditorCamera& camera)
@@ -217,6 +268,14 @@ namespace Shadow
     void Scene::OnComponentAdded(Entity entity, T& component)
     {
         static_assert(sizeof(T) == 0);
+    }
+
+    // 相机就需要设置下大小
+    template<>
+    void Scene::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& component)
+    {
+        if (m_ViewportWidth > 0 && m_ViewportHeight > 0)
+            component.Camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
     }
 
     template<> void Scene::OnComponentAdded<IDComponent>(Entity entity, IDComponent& component) { }

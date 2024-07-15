@@ -1,5 +1,33 @@
 Scene: Untitled
 Entities:
+  - Entity: 17,357,735,138,024,391,383
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        ProjectionType: 1
+        PerspectiveFOV: 0.785398185
+        PerspectiveNear: 0.00999999978
+        PerspectiveFar: 1,000
+        OrthographicSize: 10
+        OrthographicNear: -1
+        OrthographicFar: 1
+      Primary: true
+      FixedAspectRatio: false
+  - Entity: 8,311,905,842,364,554,156
+    TagComponent:
+      Tag: RedSprite
+    TransformComponent:
+      Translation: [-1.79999995, -0.300000012, 0]
+      Rotation: [-1.00705492, 0, 0]
+      Scale: [3.0999999, 5.80000019, 1]
+    SpriteRendererComponent:
+      Color: [1, 0, 0, 1]
+      TilingFactor: 1
   - Entity: 17,660,710,359,903,995,102
     TagComponent:
       Tag: Empty Entity
@@ -11,13 +39,3 @@ Entities:
       Color: [1, 1, 1, 1]
       Thickness: 1
       Fade: 0.00499999989
-  - Entity: 8,311,905,842,364,554,156
-    TagComponent:
-      Tag: RedSprite
-    TransformComponent:
-      Translation: [-1.79999995, -0.300000012, 0]
-      Rotation: [-1.00705492, 0, 0]
-      Scale: [3.0999999, 5.80000019, 1]
-    SpriteRendererComponent:
-      Color: [1, 0, 0, 1]
-      TilingFactor: 1

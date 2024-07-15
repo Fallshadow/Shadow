@@ -2,6 +2,7 @@
 
 #include "Shadow/Core/UUID.h"
 #include "Shadow/Renderer/Texture.h"
+#include "Shadow/Scene/SceneCamera.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -73,8 +74,18 @@ namespace Shadow
         CircleRendererComponent(const CircleRendererComponent&) = default;
     };
 
+    struct CameraComponent
+    {
+        SceneCamera Camera;
+        bool Primary = true; // TODO: think about moving to Scene
+        bool FixedAspectRatio = false;
+
+        CameraComponent() = default;
+        CameraComponent(const CameraComponent&) = default;
+    };
+
     template<typename ... Component>
     struct ComponentGroup { };
 
-    using AllComponents = ComponentGroup<TransformComponent, SpriteRendererComponent, CircleRendererComponent>;
+    using AllComponents = ComponentGroup<TransformComponent, SpriteRendererComponent, CircleRendererComponent, CameraComponent>;
 }

@@ -615,7 +615,17 @@ namespace Shadow
 
     void EditorLayer::OnOverlayRender()
     {
-        Renderer2D::BeginScene(m_EditorCamera);
+        if (m_SceneState == SceneState::Play)
+        {
+            Entity camera = m_ActiveScene->GetPrimaryCameraEntity();
+            if (!camera) return;
+
+            Renderer2D::BeginScene(camera.GetComponent<CameraComponent>().Camera, camera.GetComponent<TransformComponent>().GetTransform());
+        }
+        else
+        {
+            Renderer2D::BeginScene(m_EditorCamera);
+        }
 
         // Draw selected entity outline 
         if (Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity())

@@ -25,6 +25,7 @@ namespace Shadow
         void DestroyEntity(Entity entity);
         Entity DuplicateEntity(Entity entity);
 
+        Entity GetPrimaryCameraEntity();
 
         void OnRuntimeStart();
         void OnRuntimeStop();
@@ -40,6 +41,7 @@ namespace Shadow
 
         void Step(int frames = 1);
     private:
+        void RenderSceneContext();
         void RenderScene(EditorCamera& camera);
 
         template<typename T>
