@@ -14,6 +14,9 @@ namespace Shadow
         void SetScene(const Ref<Scene>& context);
 
         void OnImGuiRender();
+
+        void SetSelectedEntity(Entity entity);
+        Entity GetSelectedEntity() const { return m_SelectionEntity; }
     private:
         void DrawEntityNode(Entity entity);
         void DrawComponents(Entity entity);
@@ -23,6 +26,5 @@ namespace Shadow
     private:
         Ref<Scene> m_Scene;
         Entity m_SelectionEntity;
-        
     };
 }

@@ -52,6 +52,11 @@ namespace Shadow
         ImGui::End();
     }
 
+    void SceneHierarchyPanel::SetSelectedEntity(Entity entity)
+    {
+        m_SelectionEntity = entity;
+    }
+
     void SceneHierarchyPanel::DrawEntityNode(Entity entity)
     {
         auto& tag = entity.GetComponent<TagComponent>().Tag;

@@ -76,4 +76,9 @@ namespace Shadow
             glfwMakeContextCurrent(backup_current_context);
         }
     }
+
+    uint32_t ImGuiLayer::GetActiveWidgetID() const
+    {
+        return GImGui->ActiveId;
+    }
 }

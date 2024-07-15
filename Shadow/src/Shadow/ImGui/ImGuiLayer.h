@@ -22,6 +22,8 @@ namespace Shadow
         void End();
 
         void BlockEvents(bool block) { m_BlockEvents = block; }
+
+        uint32_t GetActiveWidgetID() const;
     private:
         bool m_BlockEvents = true;
     };

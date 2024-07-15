@@ -1,8 +1,12 @@
 #include "EditorLayer.h"
 #include "Shadow/Scene/SceneSerializer.h"
 #include "Shadow/Utils/PlatformUtils.h"
+#include "Shadow/Math/Math.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <imgui.h>
+#include <ImGuizmo.h>
 
 namespace Shadow
 {
@@ -82,6 +86,22 @@ namespace Shadow
                 break;
             }
         }
+
+        auto [mx, my] = ImGui::GetMousePos();
+        mx -= m_ViewportBounds[0].x;
+        my -= m_ViewportBounds[0].y;
+        glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
+        my = viewportSize.y - my;
+        int mouseX = (int)mx;
+        int mouseY = (int)my;
+
+        if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
+        {
+            int pixelData = m_FrameBuffer->ReadPixel(1, mouseX, mouseY);
+            m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
+        }
+
+        OnOverlayRender();
 
         m_FrameBuffer->Unbind();
     }
@@ -210,6 +230,53 @@ namespace Shadow
             ImGui::EndDragDropTarget();
         }
 
+        // Gizmos
+        Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+        if (selectedEntity && m_GizmoType != -1)
+        {
+            ImGuizmo::SetOrthographic(false);
+            ImGuizmo::SetDrawlist();
+            ImGuizmo::SetRect(m_ViewportBounds[0].x, m_ViewportBounds[0].y, m_ViewportBounds[1].x - m_ViewportBounds[0].x, m_ViewportBounds[1].y - m_ViewportBounds[0].y);
+
+            // Runtime camera from entity
+            // auto cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
+            // const auto& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
+            // const glm::mat4& cameraProjection = camera.GetProjection();
+            // glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
+
+            // Editor camera
+            const glm::mat4& cameraProjection = m_EditorCamera.GetProjection();
+            glm::mat4 cameraView = m_EditorCamera.GetViewMatrix();
+
+            // Entity transform
+            auto& tc = selectedEntity.GetComponent<TransformComponent>();
+            glm::mat4 transform = tc.GetTransform();
+
+            // Snapping
+            bool snap = Input::IsKeyPressed(Key::LeftControl);
+            float snapValue = 0.5f; // Snap to 0.5m for translation/scale
+            // Snap to 45 degrees for rotation
+            if (m_GizmoType == ImGuizmo::OPERATION::ROTATE)
+                snapValue = 45.0f;
+
+            float snapValues[3] = { snapValue, snapValue, snapValue };
+
+            ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
+                (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
+                nullptr, snap ? snapValues : nullptr);
+
+            if (ImGuizmo::IsUsing())
+            {
+                glm::vec3 translation, rotation, scale;
+                Math::DecomposeTransform(transform, translation, rotation, scale);
+
+                glm::vec3 deltaRotation = rotation - tc.Rotation;
+                tc.Translation = translation;
+                tc.Rotation += deltaRotation;
+                tc.Scale = scale;
+            }
+        }
+
         ImGui::End();
         ImGui::PopStyleVar();
 #pragma endregion
@@ -225,6 +292,10 @@ namespace Shadow
         {
             m_EditorCamera.OnEvent(e);
         }
+
+        EventDispatcher dispatcher(e);
+        dispatcher.Dispatch<KeyPressedEvent>(SD_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
+        dispatcher.Dispatch<MouseButtonPressedEvent>(SD_BIND_EVENT_FN(EditorLayer::OnMouseButtonPressed));
     }
 
 #pragma region Menu
@@ -434,4 +505,125 @@ namespace Shadow
     }
 
 #pragma endregion
+
+    bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
+    {
+        if (e.IsRepeat())
+            return false;
+
+        bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
+        bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
+        switch (e.GetKeyCode())
+        {
+            case Key::N:
+            {
+                if (control)
+                    NewScene();
+
+                break;
+            }
+            case Key::O:
+            {
+                if (control)
+                    OpenProject();
+
+                break;
+            }
+            case Key::S:
+            {
+                if (control)
+                {
+                    if (shift)
+                        SaveSceneAs();
+                    else
+                        SaveScene();
+                }
+
+                break;
+            }
+
+            case Key::D:
+            {
+                if (control)
+                    OnDuplicateEntity();
+                break;
+            }
+
+            case Key::Q:
+            {
+                if (!ImGuizmo::IsUsing())
+                    m_GizmoType = -1;
+                break;
+            }
+            case Key::W:
+            {
+                if (!ImGuizmo::IsUsing())
+                    m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+                break;
+            }
+            case Key::E:
+            {
+                if (!ImGuizmo::IsUsing())
+                    m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+                break;
+            }
+            case Key::R:
+            {
+                if (!ImGuizmo::IsUsing())
+                    m_GizmoType = ImGuizmo::OPERATION::SCALE;
+                break;
+            }
+            case Key::Delete:
+            {
+                if (Application::Get().GetImGuiLayer()->GetActiveWidgetID() == 0)
+                {
+                    Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+                    if (selectedEntity)
+                    {
+                        m_SceneHierarchyPanel.SetSelectedEntity({});
+                        m_ActiveScene->DestroyEntity(selectedEntity);
+                    }
+                }
+                break;
+            }
+        }
+
+        return false;
+    }
+
+    void EditorLayer::OnDuplicateEntity()
+    {
+        if (m_SceneState != SceneState::Edit) return;
+
+        Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+        if (selectedEntity)
+        {
+            Entity newEntity = m_EditorScene->DuplicateEntity(selectedEntity);
+            m_SceneHierarchyPanel.SetSelectedEntity(newEntity);
+        }
+    }
+
+    bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e)
+    {
+        if (e.GetMouseButton() == Mouse::ButtonLeft)
+        {
+            if (m_ViewportHovered && !ImGuizmo::IsOver() && !Input::IsKeyPressed(Key::LeftAlt))
+                m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntity);
+        }
+        return false;
+    }
+
+    void EditorLayer::OnOverlayRender()
+    {
+        Renderer2D::BeginScene(m_EditorCamera);
+
+        // Draw selected entity outline 
+        if (Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity())
+        {
+            const TransformComponent& transform = selectedEntity.GetComponent<TransformComponent>();
+            Renderer2D::DrawRect(transform.GetTransform(), glm::vec4(1.0f, 0.5f, 0.0f, 1.0f));
+        }
+
+        Renderer2D::EndScene();
+    }
 }

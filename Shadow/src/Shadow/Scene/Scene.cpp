@@ -37,6 +37,24 @@ namespace Shadow
         CopyComponent<Component...>(dst, src, enttMap);
     }
 
+    template<typename... Component>
+    static void CopyComponentIfExists(Entity dst, Entity src)
+    {
+        (
+            [&]()
+            {
+                if (src.HasComponent<Component>())
+                    dst.AddOrReplaceComponent<Component>(src.GetComponent<Component>());
+            }(),
+                ...);
+    }
+
+    template<typename... Component>
+    static void CopyComponentIfExists(ComponentGroup<Component...>, Entity dst, Entity src)
+    {
+        CopyComponentIfExists<Component...>(dst, src);
+    }
+
     Ref<Scene> Scene::Copy(Ref<Scene> other)
     {
         Ref<Scene> newScene = CreateRef<Scene>();
@@ -99,6 +117,15 @@ namespace Shadow
     {
         m_EntityMap.erase(entity.GetUUID());
         m_Registry.destroy(entity);
+    }
+
+
+    Entity Scene::DuplicateEntity(Entity entity)
+    {
+        std::string name = entity.GetName();
+        Entity newEntity = CreateEntity(name);
+        CopyComponentIfExists(AllComponents{}, newEntity, entity);
+        return newEntity;
     }
 
     void Scene::RenderScene(EditorCamera& camera)

@@ -6,7 +6,6 @@
 
 namespace Shadow
 {
-
     class EditorLayer : public Layer
     {
     public:
@@ -35,6 +34,13 @@ namespace Shadow
         void OnSceneSimulate();
         void OnSceneStop();
         void OnScenePause();
+        // 覆盖层渲染：选中物体边框
+        void OnOverlayRender();
+
+        bool OnKeyPressed(KeyPressedEvent& e);
+        bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
+
+        void OnDuplicateEntity();
     private:
         glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
         Ref<FrameBuffer> m_FrameBuffer;
@@ -51,6 +57,7 @@ namespace Shadow
         // ViewPortPanel
         glm::vec2 m_ViewportBounds[2];
         bool m_ViewportHovered = false;
+        Entity m_HoveredEntity;
 
         // ScenePanel
         SceneHierarchyPanel m_SceneHierarchyPanel;
@@ -59,6 +66,10 @@ namespace Shadow
         // Panels
         Scope<ContentBrowserPanel> m_ContentBrowserPanel;
 
+        // ToolBar
         Ref<Texture2D> m_IconPlay, m_IconPause, m_IconStep, m_IconSimulate, m_IconStop;
+
+        // Gizmo
+        int m_GizmoType = -1;
     };
 }
