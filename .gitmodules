@@ -19,3 +19,6 @@
 [submodule "Shadow/vendor/msdf-atlas-gen"]
 	path = Shadow/vendor/msdf-atlas-gen
 	url = https://github.com/Chlumsky/msdf-atlas-gen
+[submodule "Shadow/vendor/Box2D"]
+	path = Shadow/vendor/Box2D
+	url = https://github.com/erincatto/box2d
