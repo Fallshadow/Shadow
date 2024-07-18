@@ -25,6 +25,8 @@ namespace Shadow
 
         uint32_t GetActiveWidgetID() const;
     private:
+        void SetDarkThemeColors();
+    private:
         bool m_BlockEvents = true;
     };
 }
