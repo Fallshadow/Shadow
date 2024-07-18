@@ -3,6 +3,7 @@
 #include "Shadow/Core/UUID.h"
 #include "Shadow/Renderer/Texture.h"
 #include "Shadow/Scene/SceneCamera.h"
+#include "Shadow/Renderer/Font.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -84,8 +85,17 @@ namespace Shadow
         CameraComponent(const CameraComponent&) = default;
     };
 
+    struct TextComponent
+    {
+        std::string TextString;
+        Ref<Font> FontAsset = Font::GetDefault();
+        glm::vec4 Color{ 1.0f };
+        float Kerning = 0.0f;
+        float LineSpacing = 0.0f;
+    };
+
     template<typename ... Component>
     struct ComponentGroup { };
 
-    using AllComponents = ComponentGroup<TransformComponent, SpriteRendererComponent, CircleRendererComponent, CameraComponent>;
+    using AllComponents = ComponentGroup<TransformComponent, SpriteRendererComponent, CircleRendererComponent, CameraComponent, TextComponent>;
 }

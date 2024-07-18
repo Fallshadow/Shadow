@@ -179,6 +179,18 @@ namespace Shadow
                 Renderer2D::DrawCircle(transform.GetTransform(), circle.Color, circle.Thickness, circle.Fade, (int)entity);
             }
         }
+
+        // Draw text
+        {
+            auto view = m_Registry.view<TransformComponent, TextComponent>();
+            for (auto entity : view)
+            {
+                auto [transform, text] = view.get<TransformComponent, TextComponent>(entity);
+
+                Renderer2D::DrawString(text.TextString, text.FontAsset, transform, { text.Color, text.Kerning, text.LineSpacing}, (int)entity);
+            }
+        }
+
     }
 
     void Scene::RenderScene(EditorCamera& camera)
@@ -278,6 +290,7 @@ namespace Shadow
             component.Camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
     }
 
+    template<> void Scene::OnComponentAdded<TextComponent>(Entity entity, TextComponent& component) { }
     template<> void Scene::OnComponentAdded<IDComponent>(Entity entity, IDComponent& component) { }
     template<> void Scene::OnComponentAdded<TransformComponent>(Entity entity, TransformComponent& component) { }
     template<> void Scene::OnComponentAdded<SpriteRendererComponent>(Entity entity, SpriteRendererComponent& component) { }

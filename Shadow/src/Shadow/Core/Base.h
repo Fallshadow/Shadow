@@ -18,6 +18,7 @@
 
 namespace Shadow
 {
+    // 独占智能指针，离开作用域就释放
     template<typename T>
     using Scope = std::unique_ptr<T>;
     template<typename T, typename ... Args>
@@ -26,6 +27,7 @@ namespace Shadow
         return std::make_unique<T>(std::forward<Args>(args)...);
     }
 
+    // 共享智能指针，离开作用域且计数为零时释放
     template<typename T>
     using Ref = std::shared_ptr<T>;
     template<typename T, typename ... Args>

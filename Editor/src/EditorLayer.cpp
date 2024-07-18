@@ -10,9 +10,11 @@
 
 namespace Shadow
 {
+    static Ref<Font> s_Font;
+
     EditorLayer::EditorLayer() : Layer("EditorLayer")
     {
-
+        s_Font = Font::GetDefault();
     }
 
     void EditorLayer::OnAttach()
@@ -186,6 +188,15 @@ namespace Shadow
 
         m_SceneHierarchyPanel.OnImGuiRender();
         m_ContentBrowserPanel->OnImGuiRender();
+
+#pragma region Setting
+        ImGui::Begin("Settings");
+
+        ImGui::Image((ImTextureID)s_Font->GetAtlasTexture()->GetRendererID(), { 512,512 }, { 0, 1 }, { 1, 0 });
+
+        ImGui::End();
+#pragma endregion
+
 
 #pragma region Stats
         ImGui::Begin("Stats");

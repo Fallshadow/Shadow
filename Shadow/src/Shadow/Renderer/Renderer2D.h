@@ -4,6 +4,7 @@
 #include "Shadow/Renderer/Camera.h"
 #include "Shadow/Renderer/EditorCamera.h"
 #include "Shadow/Renderer/Texture.h"
+#include "Shadow/Renderer/Font.h"
 
 namespace Shadow
 {
@@ -45,6 +46,7 @@ namespace Shadow
             float Kerning = 0.0f;
             float LineSpacing = 0.0f;
         };
+        static void DrawString(const std::string& string, Ref<Font> font, const glm::mat4& transform, const TextParams& textParams, int entityID = -1);
 
         static float GetLineWidth();
         static void SetLineWidth(float width);

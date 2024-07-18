@@ -189,6 +189,7 @@ namespace Shadow
             DisplayAddComponentEntry<SpriteRendererComponent>("Sprite Renderer");
             DisplayAddComponentEntry<CircleRendererComponent>("Circle Renderer");
             DisplayAddComponentEntry<CameraComponent>("Camera");
+            DisplayAddComponentEntry<TextComponent>("Text Component");
 
             ImGui::EndPopup();
         }
@@ -291,6 +292,14 @@ namespace Shadow
 
                     ImGui::Checkbox("Fixed Aspect Ratio", &component.FixedAspectRatio);
                 }
+            });
+
+        DrawComponent<TextComponent>("Text Renderer", entity, [](auto& component)
+            {
+                ImGui::InputTextMultiline("Text String", &component.TextString);
+                ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+                ImGui::DragFloat("Kerning", &component.Kerning, 0.025f);
+                ImGui::DragFloat("Line Spacing", &component.LineSpacing, 0.025f);
             });
     }
 
