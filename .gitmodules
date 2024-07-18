@@ -16,3 +16,6 @@
 [submodule "Shadow/vendor/ImGuizmo"]
 	path = Shadow/vendor/ImGuizmo
 	url = https://github.com/CedricGuillemet/ImGuizmo
+[submodule "Shadow/vendor/msdf-atlas-gen"]
+	path = Shadow/vendor/msdf-atlas-gen
+	url = https://github.com/Chlumsky/msdf-atlas-gen
