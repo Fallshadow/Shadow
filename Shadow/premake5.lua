@@ -37,6 +37,7 @@ project "Shadow"
 		"%{IncludeDir.msdfgen}",
 		"%{IncludeDir.msdf_atlas_gen}",
 		"%{IncludeDir.Box2D}",
+		"%{IncludeDir.mono}",
 	}
 
 	links 
@@ -47,6 +48,7 @@ project "Shadow"
 		"yaml-cpp",
 		"msdf-atlas-gen",
 		"Box2D",
+		"%{Library.mono}",
 	}
 
 	filter "files:vendor/ImGuizmo/**.cpp"
