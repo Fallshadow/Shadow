@@ -1,11 +1,19 @@
 #include "sdpch.h"
 #include "Scene.h"
 #include "Shadow/Renderer/Renderer2D.h"
+#include "Shadow/Physics/Physics2D.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
+
+// Box2D
+#include "box2d/b2_world.h"
+#include "box2d/b2_body.h"
+#include "box2d/b2_fixture.h"
+#include "box2d/b2_polygon_shape.h"
+#include "box2d/b2_circle_shape.h"
 
 namespace Shadow
 {
@@ -202,24 +210,110 @@ namespace Shadow
         Renderer2D::EndScene();
     }
 
+    void Scene::OnPhysics2DStart()
+    {
+        m_PhysicsWorld = new b2World({ 0.0f, -9.8f });
+
+        auto view = m_Registry.view<Rigidbody2DComponent>();
+        for (auto e : view)
+        {
+            Entity entity = { e, this };
+            auto& transform = entity.GetComponent<TransformComponent>();
+            auto& rb2d = entity.GetComponent<Rigidbody2DComponent>();
+
+            b2BodyDef bodyDef;
+            bodyDef.type = Utils::Rigidbody2DTypeToBox2DBody(rb2d.Type);
+            bodyDef.position.Set(transform.Translation.x, transform.Translation.y);
+            bodyDef.angle = transform.Rotation.z;
+
+            b2Body* body = m_PhysicsWorld->CreateBody(&bodyDef);
+            body->SetFixedRotation(rb2d.FixedRotation);
+            rb2d.RuntimeBody = body;
+
+            if (entity.HasComponent<BoxCollider2DComponent>())
+            {
+                auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+
+                b2PolygonShape boxShape;
+                boxShape.SetAsBox(bc2d.Size.x * transform.Scale.x, bc2d.Size.y * transform.Scale.y, b2Vec2(bc2d.Offset.x, bc2d.Offset.y), 0.0f);
+
+                b2FixtureDef fixtureDef;
+                fixtureDef.shape = &boxShape;
+                fixtureDef.density = bc2d.Density;
+                fixtureDef.friction = bc2d.Friction;
+                fixtureDef.restitution = bc2d.Restitution;
+                fixtureDef.restitutionThreshold = bc2d.RestitutionThreshold;
+                body->CreateFixture(&fixtureDef);
+            }
+
+            if (entity.HasComponent<CircleCollider2DComponent>())
+            {
+                auto& cc2d = entity.GetComponent<CircleCollider2DComponent>();
+
+                b2CircleShape circleShape;
+                circleShape.m_p.Set(cc2d.Offset.x, cc2d.Offset.y);
+                circleShape.m_radius = transform.Scale.x * cc2d.Radius;
+
+                b2FixtureDef fixtureDef;
+                fixtureDef.shape = &circleShape;
+                fixtureDef.density = cc2d.Density;
+                fixtureDef.friction = cc2d.Friction;
+                fixtureDef.restitution = cc2d.Restitution;
+                fixtureDef.restitutionThreshold = cc2d.RestitutionThreshold;
+                body->CreateFixture(&fixtureDef);
+            }
+        }
+    }
+
+    void Scene::OnPhysics2DStop()
+    {
+        delete m_PhysicsWorld;
+        m_PhysicsWorld = nullptr;
+    }
+
+    void Scene::PhysicsScene(TimeStep ts)
+    {
+        // Physics
+        {
+            const int32_t velocityIterations = 6;
+            const int32_t positionIterations = 2;
+            m_PhysicsWorld->Step(ts, velocityIterations, positionIterations);
+
+            // Retrieve transform from Box2D
+            auto view = m_Registry.view<Rigidbody2DComponent>();
+            for (auto e : view)
+            {
+                Entity entity = { e, this };
+                auto& transform = entity.GetComponent<TransformComponent>();
+                auto& rb2d = entity.GetComponent<Rigidbody2DComponent>();
+
+                b2Body* body = (b2Body*)rb2d.RuntimeBody;
+                const auto& position = body->GetPosition();
+                transform.Translation.x = position.x;
+                transform.Translation.y = position.y;
+                transform.Rotation.z = body->GetAngle();
+            }
+        }
+    }
+
     void Scene::OnRuntimeStart()
     {
-        
+        OnPhysics2DStart();
     }
 
     void Scene::OnRuntimeStop()
     {
-        
+        OnPhysics2DStop();
     }
 
     void Scene::OnSimulationStart()
     {
-
+        OnPhysics2DStart();
     }
 
     void Scene::OnSimulationStop()
     {
-
+        OnPhysics2DStop();
     }
 
     void Scene::Step(int frames)
@@ -235,6 +329,7 @@ namespace Shadow
         }
 
         // Physics
+        PhysicsScene(ts);
 
         // Render 2D
         Camera* mainCamera = nullptr;
@@ -269,6 +364,7 @@ namespace Shadow
         if (!m_IsPaused || m_StepFrames-- > 0)
         {
             // Physics
+            PhysicsScene(ts);
         }
 
         // Render
@@ -296,4 +392,7 @@ namespace Shadow
     template<> void Scene::OnComponentAdded<SpriteRendererComponent>(Entity entity, SpriteRendererComponent& component) { }
     template<> void Scene::OnComponentAdded<CircleRendererComponent>(Entity entity, CircleRendererComponent& component) { }
     template<> void Scene::OnComponentAdded<TagComponent>(Entity entity, TagComponent& component) { }
+    template<> void Scene::OnComponentAdded<Rigidbody2DComponent>(Entity entity, Rigidbody2DComponent& component) { }
+    template<> void Scene::OnComponentAdded<BoxCollider2DComponent>(Entity entity, BoxCollider2DComponent& component) { }
+    template<> void Scene::OnComponentAdded<CircleCollider2DComponent>(Entity entity, CircleCollider2DComponent& component) { }
 }

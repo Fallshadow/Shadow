@@ -6,6 +6,10 @@
 
 #include <entt.hpp>
 
+// b2World 是 Box2D 物理引擎中的一个重要类，用于表示整个物理世界。
+// 在 Box2D 中，b2World 负责管理所有物理实体（如刚体、关节等）、执行物理仿真计算以及处理碰撞检测等功能。
+class b2World;
+
 namespace Shadow
 {
     class Entity;
@@ -46,6 +50,10 @@ namespace Shadow
 
         template<typename T>
         void OnComponentAdded(Entity entity, T& component);
+
+        void OnPhysics2DStart();
+        void OnPhysics2DStop();
+        void PhysicsScene(TimeStep ts);
     private:
         uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
 
@@ -57,5 +65,7 @@ namespace Shadow
 
         bool m_IsPaused = false;
         int m_StepFrames = 0;
+
+        b2World* m_PhysicsWorld = nullptr;
     };
 }
