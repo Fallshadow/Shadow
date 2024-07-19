@@ -28,6 +28,11 @@ namespace Shadow
         Entity CreateEntityWithUUID(UUID uuid, const std::string& name = std::string());
         void DestroyEntity(Entity entity);
         Entity DuplicateEntity(Entity entity);
+        template<typename... Components>
+        auto GetAllEntitiesWith()
+        {
+            return m_Registry.view<Components...>();
+        }
 
         Entity GetPrimaryCameraEntity();
 
