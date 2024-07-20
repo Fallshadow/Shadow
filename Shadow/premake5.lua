@@ -38,6 +38,7 @@ project "Shadow"
 		"%{IncludeDir.msdf_atlas_gen}",
 		"%{IncludeDir.Box2D}",
 		"%{IncludeDir.mono}",
+		"%{IncludeDir.filewatch}",
 	}
 
 	links 

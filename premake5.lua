@@ -29,6 +29,7 @@ workspace "Shadow"
 	IncludeDir["msdf_atlas_gen"] = "%{wks.location}/Shadow/vendor/msdf-atlas-gen/msdf-atlas-gen"
 	IncludeDir["Box2D"] = "%{wks.location}/Shadow/vendor/Box2D/include"
 	IncludeDir["mono"] = "%{wks.location}/Shadow/vendor/mono/include"
+	IncludeDir["filewatch"] = "%{wks.location}/Shadow/vendor/filewatch"
 
 	LibraryDir = {}
 	LibraryDir["mono"] = "%{wks.location}/Hazel/vendor/mono/lib/%{cfg.buildcfg}"
