@@ -1,0 +1,6 @@
+E:\MyGitHubPage\Shadow\Editor\Resources\Scripts\Intermediates\Debug\ScriptCore.csproj.AssemblyReference.cache
+E:\MyGitHubPage\Shadow\Editor\Resources\Scripts\Intermediates\Debug\ScriptCore.csproj.CoreCompileInputs.cache
+E:\MyGitHubPage\Shadow\Editor\Resources\Scripts\Intermediates\Debug\ScriptCore.dll
+E:\MyGitHubPage\Shadow\Editor\Resources\Scripts\Intermediates\Debug\ScriptCore.pdb
+E:\MyGitHubPage\Shadow\Editor\Resources\Scripts\ScriptCore.dll
+E:\MyGitHubPage\Shadow\Editor\Resources\Scripts\ScriptCore.pdb

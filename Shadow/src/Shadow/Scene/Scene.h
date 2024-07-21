@@ -34,6 +34,8 @@ namespace Shadow
             return m_Registry.view<Components...>();
         }
 
+        Entity FindEntityByName(std::string_view name);
+        Entity GetEntityByUUID(UUID uuid);
         Entity GetPrimaryCameraEntity();
 
         void OnRuntimeStart();
@@ -47,6 +49,7 @@ namespace Shadow
 
         void SetPaused(bool paused) { m_IsPaused = paused; }
         bool IsPaused() const { return m_IsPaused; }
+        bool IsRunning() const { return m_IsRunning; }
 
         void Step(int frames = 1);
     private:
@@ -70,6 +73,7 @@ namespace Shadow
 
         bool m_IsPaused = false;
         int m_StepFrames = 0;
+        bool m_IsRunning = false;
 
         b2World* m_PhysicsWorld = nullptr;
     };

@@ -144,9 +144,18 @@ namespace Shadow
         CircleCollider2DComponent(const CircleCollider2DComponent&) = default;
     };
 
+    struct ScriptComponent
+    {
+        std::string ClassName;
+
+        ScriptComponent() = default;
+        ScriptComponent(const ScriptComponent&) = default;
+    };
+
     template<typename ... Component>
     struct ComponentGroup { };
 
     using AllComponents = ComponentGroup<TransformComponent, SpriteRendererComponent, CircleRendererComponent, CameraComponent, TextComponent, 
-        Rigidbody2DComponent, BoxCollider2DComponent, CircleCollider2DComponent>;
+        Rigidbody2DComponent, BoxCollider2DComponent, CircleCollider2DComponent,
+        ScriptComponent>;
 }

@@ -32,12 +32,19 @@ workspace "Shadow"
 	IncludeDir["filewatch"] = "%{wks.location}/Shadow/vendor/filewatch"
 
 	LibraryDir = {}
-	LibraryDir["mono"] = "%{wks.location}/Hazel/vendor/mono/lib/%{cfg.buildcfg}"
+	LibraryDir["mono"] = "%{wks.location}/Shadow/vendor/mono/lib/%{cfg.buildcfg}"
 
 	Library = {}
 	Library["mono"] = "%{LibraryDir.mono}/libmono-static-sgen.lib"
+
+	Library["WinSock"] = "Ws2_32.lib"
+	Library["WinMM"] = "Winmm.lib"
+	Library["WinVersion"] = "Version.lib"
+	Library["BCrypt"] = "Bcrypt.lib"
+
 group "Core"
 	include "Shadow"
+	include "ScriptCore"
 group ""
 
 group "Editor"

@@ -3,6 +3,7 @@
 #include "Shadow/Core/Tool/TimeStep.h"
 #include "Shadow/Utils/PlatformUtils.h"
 #include "Shadow/Renderer/Renderer.h"
+#include "Shadow/Scripting/ScriptEngine.h"
 
 namespace Shadow
 {
@@ -28,7 +29,7 @@ namespace Shadow
 	Application::~Application()
 	{
 		// 脚本结束
-
+        ScriptEngine::Shutdown();
 
 		// 渲染结束
         Renderer::Shutdown();

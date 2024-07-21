@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include "Shadow/Renderer/Renderer2D.h"
 #include "Shadow/Physics/Physics2D.h"
+#include "Shadow/Scripting/ScriptEngine.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -143,6 +144,28 @@ namespace Shadow
         CopyComponentIfExists(AllComponents{}, newEntity, entity);
         return newEntity;
     }
+
+    Entity Scene::FindEntityByName(std::string_view name)
+    {
+        auto view = m_Registry.view<TagComponent>();
+        for (auto entity : view)
+        {
+            const TagComponent& tc = view.get<TagComponent>(entity);
+            if (tc.Tag == name)
+                return Entity{ entity, this };
+        }
+        return {};
+    }
+
+    Entity Scene::GetEntityByUUID(UUID uuid)
+    {
+        // TODO(Yan): Maybe should be assert
+        if (m_EntityMap.find(uuid) != m_EntityMap.end())
+            return { m_EntityMap.at(uuid), this };
+
+        return {};
+    }
+
 
     Entity Scene::GetPrimaryCameraEntity()
     {
@@ -298,12 +321,28 @@ namespace Shadow
 
     void Scene::OnRuntimeStart()
     {
+        m_IsRunning = true;
+
         OnPhysics2DStart();
+
+        // 脚本
+        {
+            ScriptEngine::OnRuntimeStart(this);
+
+            auto view = m_Registry.view<ScriptComponent>();
+            for (auto e : view)
+            {
+                Entity entity = { e, this };
+                ScriptEngine::OnCreateEntity(entity);
+            }
+        }
     }
 
     void Scene::OnRuntimeStop()
     {
+        m_IsRunning = false;
         OnPhysics2DStop();
+        ScriptEngine::OnRuntimeStop();
     }
 
     void Scene::OnSimulationStart()
@@ -326,6 +365,15 @@ namespace Shadow
         if (!m_IsPaused || m_StepFrames-- > 0)
         {
             // Update scripts
+            {
+                // C# Entity OnUpdate
+                auto view = m_Registry.view<ScriptComponent>();
+                for (auto e : view)
+                {
+                    Entity entity = { e, this };
+                    ScriptEngine::OnUpdateEntity(entity, ts);
+                }
+            }
         }
 
         // Physics
@@ -395,4 +443,5 @@ namespace Shadow
     template<> void Scene::OnComponentAdded<Rigidbody2DComponent>(Entity entity, Rigidbody2DComponent& component) { }
     template<> void Scene::OnComponentAdded<BoxCollider2DComponent>(Entity entity, BoxCollider2DComponent& component) { }
     template<> void Scene::OnComponentAdded<CircleCollider2DComponent>(Entity entity, CircleCollider2DComponent& component) { }
+    template<> void Scene::OnComponentAdded<ScriptComponent>(Entity entity, ScriptComponent& component) { }
 }

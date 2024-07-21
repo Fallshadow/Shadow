@@ -58,6 +58,14 @@ project "Shadow"
 	filter "system:windows"
 		systemversion "latest"
 
+		links
+		{
+			"%{Library.WinSock}",
+			"%{Library.WinMM}",
+			"%{Library.WinVersion}",
+			"%{Library.BCrypt}",
+		}
+
 	filter "configurations:Debug"
 		defines "SD_DEBUG"
 		runtime "Debug"

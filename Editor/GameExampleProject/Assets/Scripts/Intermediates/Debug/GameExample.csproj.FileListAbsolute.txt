@@ -1,0 +1,9 @@
+E:\MyGitHubPage\Shadow\Editor\GameExampleProject\Assets\Scripts\Binaries\GameExample.dll
+E:\MyGitHubPage\Shadow\Editor\GameExampleProject\Assets\Scripts\Binaries\GameExample.pdb
+E:\MyGitHubPage\Shadow\Editor\GameExampleProject\Assets\Scripts\Binaries\ScriptCore.dll
+E:\MyGitHubPage\Shadow\Editor\GameExampleProject\Assets\Scripts\Binaries\ScriptCore.pdb
+E:\MyGitHubPage\Shadow\Editor\GameExampleProject\Assets\Scripts\Intermediates\Debug\GameExample.csproj.AssemblyReference.cache
+E:\MyGitHubPage\Shadow\Editor\GameExampleProject\Assets\Scripts\Intermediates\Debug\GameExample.csproj.CoreCompileInputs.cache
+E:\MyGitHubPage\Shadow\Editor\GameExampleProject\Assets\Scripts\Intermediates\Debug\GameExam.1EAB95A6.Up2Date
+E:\MyGitHubPage\Shadow\Editor\GameExampleProject\Assets\Scripts\Intermediates\Debug\GameExample.dll
+E:\MyGitHubPage\Shadow\Editor\GameExampleProject\Assets\Scripts\Intermediates\Debug\GameExample.pdb

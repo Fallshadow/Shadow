@@ -2,6 +2,7 @@
 #include "Shadow/Scene/SceneSerializer.h"
 #include "Shadow/Utils/PlatformUtils.h"
 #include "Shadow/Math/Math.h"
+#include "Shadow/Scripting/ScriptEngine.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -182,6 +183,14 @@ namespace Shadow
                 ImGui::EndMenu();
             }
 
+            if (ImGui::BeginMenu("Script"))
+            {
+                if (ImGui::MenuItem("Reload assembly", "Ctrl+R"))
+                    ScriptEngine::ReloadAssembly();
+
+                ImGui::EndMenu();
+            }
+
             ImGui::EndMenuBar();
         }
 #pragma endregion
@@ -327,6 +336,8 @@ namespace Shadow
     {
         if (Project::Load(path))
         {
+            ScriptEngine::Init();
+
             auto startScenePath = Project::GetAssetFileSystemPath(Project::GetActive()->GetConfig().StartScene);
             OpenScene(startScenePath);
             m_ContentBrowserPanel = CreateScope<ContentBrowserPanel>();

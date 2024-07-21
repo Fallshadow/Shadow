@@ -14,6 +14,7 @@ namespace Shadow
         std::filesystem::path StartScene;
 
         std::filesystem::path AssetDirectory;
+        std::filesystem::path ScriptModulePath;
     };
 
     // TODO：新建项目的交互窗口
